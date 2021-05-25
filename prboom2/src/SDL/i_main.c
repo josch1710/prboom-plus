@@ -621,11 +621,7 @@ void I_SetProcessPriority(void)
 		else if (process_priority == 2)
 			ulPriorityClass = PRTYC_TIMECRITICAL;
 		
-		if (DosSetPriority(PRTYS_PROCESS, ulPriorityClass, lDelta, 0L) != NO_ERROR)
-		{
-			errbuf = malloc(50);
-			memcpy(errbuf, "DosSetPriority was not successful");
-		}
+		DosSetPriority(PRTYS_PROCESS, ulPriorityClass, lDelta, 0L);
 	}
 #else
     return;

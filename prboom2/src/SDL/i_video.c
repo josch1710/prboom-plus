@@ -773,6 +773,9 @@ static void I_FillScreenResolutionsList(void)
     for(i = count - 1; i >= 0; i--)
     {
       int in_list = false;
+      
+      if (modes[i] == 0xC)
+      	  continue;
 
       doom_snprintf(mode, sizeof(mode), "%dx%d", modes[i]->w, modes[i]->h);
 
