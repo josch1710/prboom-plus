@@ -46,6 +46,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 typedef BOOL (WINAPI *SetAffinityFunc)(HANDLE hProcess, DWORD mask);
+#elif OS2
+#define INCL_DOSPROCESS
+#include <os2.h>
 #else
 #include <sched.h>
 #endif
@@ -527,6 +530,18 @@ void I_SetProcessPriority(void)
         errbuf = WINError();
       }
     }
+#elif OS2
+	{
+		ULONG ulPriorityClass = PRTYC_REGULAR;
+		LONG lDelta = 0L;
+		
+		if (process_priority == 1)
+			lDelta = 20L;
+		else if (process_priority == 2)
+			ulPriorityClass = PRTYC_TIMECRITICAL;
+		
+		DosSetPriority(PRTYS_PROCESS, ulPriorityClass, lDelta, 0L);
+	}
 #else
     return;
 #endif

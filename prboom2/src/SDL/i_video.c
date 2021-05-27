@@ -120,7 +120,7 @@ SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
 SDL_Renderer *sdl_renderer;
-static SDL_Texture *sdl_texture;
+static SDL_Texture *sdl_texture;                                    
 static SDL_GLContext sdl_glcontext;
 unsigned int windowid = 0;
 SDL_Rect src_rect = { 0, 0, 0, 0 };
@@ -1049,7 +1049,7 @@ void I_InitScreenResolution(void)
 
 void I_SetWindowCaption(void)
 {
-  SDL_SetWindowTitle(NULL, PACKAGE_NAME " " PACKAGE_VERSION);
+  SDL_SetWindowTitle(sdl_window, PACKAGE_NAME " " PACKAGE_VERSION);
 }
 
 // 
@@ -1072,7 +1072,7 @@ void I_SetWindowIcon(void)
 
   if (surface)
   {
-    SDL_SetWindowIcon(NULL, surface);
+    SDL_SetWindowIcon(sdl_window, surface);
   }
 }
 
@@ -1230,16 +1230,18 @@ void I_UpdateVideoMode(void)
   {
     int flags = SDL_RENDERER_TARGETTEXTURE;
 
+// OS/2 SDL2 does not like PRESENTVSYNC    
+#ifndef OS2
     if (render_vsync && !novsync)
       flags |= SDL_RENDERER_PRESENTVSYNC;
-
+#endif
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
       SCREENWIDTH, SCREENHEIGHT,
       init_flags);
-    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, flags);
 
+    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, flags);
     // [FG] aspect ratio correction for the canonical video modes
     if (SCREENWIDTH % 320 == 0 && SCREENHEIGHT % 200 == 0)
     {

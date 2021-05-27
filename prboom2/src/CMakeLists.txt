@@ -310,6 +310,10 @@ function(AddGameExecutable TARGET SOURCES)
             )
         endif()
     endif()
+    
+    if(OS2)
+    	add_definitions("-DOS2")
+    endif()
 
     add_definitions("-DUSE_EXPERIMENTAL_MUSIC")
 
@@ -342,6 +346,10 @@ function(AddGameExecutable TARGET SOURCES)
     if(PCREPOSIX_FOUND)
         target_include_directories(${TARGET} PRIVATE ${PCRE_INCLUDE_DIR})
         target_link_libraries(${TARGET} PRIVATE ${PCREPOSIX_LIBRARIES})
+        if (OS2)
+# On OS/2, pcreposix doesn't seem to also pick up pcre.a
+        	target_link_libraries(${TARGET} PRIVATE c:/usr/lib/pcre.a)
+        endif()
     endif()
     ApplySDL2NetOptions(${TARGET})
     if(ZLIB_FOUND)
