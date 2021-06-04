@@ -120,7 +120,7 @@ SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
 SDL_Renderer *sdl_renderer;
-static SDL_Texture *sdl_texture;                                    
+static SDL_Texture *sdl_texture;
 static SDL_GLContext sdl_glcontext;
 unsigned int windowid = 0;
 SDL_Rect src_rect = { 0, 0, 0, 0 };
@@ -595,7 +595,6 @@ static void I_ShutdownSDL(void)
   if (sdl_window) SDL_DestroyWindow(sdl_window);
 
   SDL_Quit();
-lprintf(LO_INFO, "Exit I_ShutdownSDL\n");
   return;
 }
 
