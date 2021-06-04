@@ -472,10 +472,17 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {DOOMWADDIR}, // build-time configured DOOMWADDIR
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
+#ifndef __OS2__
     {"/usr/local/share/games/doom"},
     {"/usr/share/games/doom"},
     {"/usr/local/share/doom"},
     {"/usr/share/doom"},
+#else
+    {"/@unixroot/usr/local/share/games/doom"},
+    {"/@unixroot/usr/share/games/doom"},
+    {"/@unixroot/usr/local/share/doom"},
+    {"/@unixroot/usr/share/doom"},
+#endif
   }, *search;
 
   static size_t num_search;
