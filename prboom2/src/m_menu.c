@@ -566,7 +566,12 @@ short EpiMenuMap[8] = { 1, 1, 1, 1, -1, -1, -1, -1 }, EpiMenuEpi[8] = { 1,2,3,4,
 //
 int epiChoice;
 
-void M_AddEpisode(const char *map, char *def)
+void M_ClearEpisodes(void)
+{
+	EpiDef.numitems = 0;
+}
+
+void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char *alpha)
 {
 	if (!EpiCustom)
 	{
@@ -577,23 +582,15 @@ void M_AddEpisode(const char *map, char *def)
 			EpiDef.numitems = 0;
 	}
 
-	if (*def == '-')	// means 'clear'
-	{
-		EpiDef.numitems = 0;
-	}
-	else
 	{
 		int epi, mapnum;
-		const char *gfx = strtok(def, "\n");
-		const char *txt = strtok(NULL, "\n");
-		const char *alpha = strtok(NULL, "\n");
 		if (EpiDef.numitems >= 8) return;
 		G_ValidateMapName(map, &epi, &mapnum);
 		EpiMenuEpi[EpiDef.numitems] = epi;
 		EpiMenuMap[EpiDef.numitems] = mapnum;
 		strncpy(EpisodeMenu[EpiDef.numitems].name, gfx, 8);
 		EpisodeMenu[EpiDef.numitems].name[8] = 0;
-		EpisodeMenu[EpiDef.numitems].alttext = txt;
+		EpisodeMenu[EpiDef.numitems].alttext = txt ? strdup(txt) : NULL;
 		EpisodeMenu[EpiDef.numitems].alphaKey = alpha ? *alpha : 0;
 		EpiDef.numitems++;
 	}
@@ -691,7 +688,7 @@ static void M_RestartLevelResponse(int ch)
     return;
 
   if (demorecording)
-    exit(0);
+    I_SafeExit(0);
 
   currentMenu->lastOn = itemOn;
   M_ClearMenus ();
@@ -2717,9 +2714,6 @@ enum {           // killough 10/98: enum for y-offset info
   weap_pref7,
   weap_pref8,
   weap_pref9,
-  weap_stub2,
-  weap_toggle,
-  weap_toggle2,
 };
 
 setup_menu_t weap_settings1[];
@@ -2745,9 +2739,6 @@ setup_menu_t weap_settings1[] =  // Weapons Settings screen
   {"7th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref7*8, {"weapon_choice_7"}},
   {"8th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref8*8, {"weapon_choice_8"}},
   {"9th CHOICE WEAPON",S_WEAP,m_null,WP_X,WP_Y+weap_pref9*8, {"weapon_choice_9"}},
-
-  {"Enable Fist/Chainsaw\n& SG/SSG toggle", S_YESNO, m_null, WP_X,
-   WP_Y+ weap_toggle*8, {"doom_weapon_toggles"}},
 
   // Button for resetting to defaults
   {0,S_RESET,m_null,X_BUTTON,Y_BUTTON},
@@ -5031,6 +5022,7 @@ dboolean M_Responder (event_t* ev) {
     {
       movement_mouselook = !movement_mouselook;
       M_ChangeMouseLook();
+      doom_printf("Mouselook %s", movement_mouselook ? "on" : "off");
       // Don't eat the keypress in this case.
       // return true;
     }
@@ -5038,6 +5030,7 @@ dboolean M_Responder (event_t* ev) {
     if (ch == key_novert)
     {
       movement_mousenovert = !movement_mousenovert;
+      doom_printf("Vertical Mouse Movement %s", movement_mousenovert ? "off" : "on");
       // Don't eat the keypress in this case.
       // return true;
     }

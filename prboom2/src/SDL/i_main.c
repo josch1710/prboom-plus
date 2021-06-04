@@ -375,8 +375,6 @@ void I_AtExit(atexit_func_t func, dboolean run_on_error)
     exit_funcs = entry;
 }
 
-static int has_exited;
-
 /* I_SafeExit
  * This function is called instead of exit() by functions that might be called
  * during the exit process (i.e. after exit() has already been called)
@@ -385,42 +383,31 @@ static int has_exited;
 
 void I_SafeExit(int rc)
 {
-  if (!has_exited)    /* If it hasn't exited yet, exit now -- killough */
+  atexit_listentry_t *entry;
+
+  // Run through all exit functions
+
+  while ((entry = exit_funcs))
+  {
+    exit_funcs = exit_funcs->next;
+
+    if (rc == 0 || entry->run_on_error)
     {
-      atexit_listentry_t *entry;
-
-      // Run through all exit functions
-
-      entry = exit_funcs;
-
-      while (entry != NULL)
-      {
-        if (rc == 0 || entry->run_on_error)
-        {
-          entry->func();
-        }
-        entry = entry->next;
-      }
-
-      has_exited=rc ? 2 : 1;
-      exit(rc);
+      entry->func();
     }
+  }
+
+  exit(rc);
 }
 
 static void I_Quit (void)
 {
-  if (!has_exited)
-    has_exited=1;   /* Prevent infinitely recursive exits -- killough */
-
-  if (has_exited == 1) {
-    has_exited = 2;
-    if (!demorecording)
-      I_EndDoom();
-    if (demorecording)
-      G_CheckDemoStatus();
-    M_SaveDefaults ();
-    I_DemoExShutdown();
-  }
+  if (!demorecording)
+    I_EndDoom();
+  if (demorecording)
+    G_CheckDemoStatus();
+  M_SaveDefaults ();
+  I_DemoExShutdown();
 }
 
 #ifdef SECURE_UID
