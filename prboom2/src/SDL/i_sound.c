@@ -899,7 +899,7 @@ void I_InitMusic(void)
   }
 #ifdef HAVE_MIXER
   if (!music_tmp) {
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__OS2__)
     music_tmp = strdup("/tmp/"PACKAGE_TARNAME"-music-XXXXXX");
     {
       int fd = mkstemp(music_tmp);
