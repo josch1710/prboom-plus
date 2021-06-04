@@ -595,6 +595,7 @@ static void I_ShutdownSDL(void)
   if (sdl_window) SDL_DestroyWindow(sdl_window);
 
   SDL_Quit();
+lprintf(LO_INFO, "Exit I_ShutdownSDL\n");
   return;
 }
 
@@ -1231,7 +1232,7 @@ void I_UpdateVideoMode(void)
     int flags = SDL_RENDERER_TARGETTEXTURE;
 
 // OS/2 SDL2 does not like PRESENTVSYNC    
-#ifndef OS2
+#ifndef __OS2__
     if (render_vsync && !novsync)
       flags |= SDL_RENDERER_PRESENTVSYNC;
 #endif
