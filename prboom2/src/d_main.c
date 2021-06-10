@@ -99,6 +99,10 @@
 
 #include "i_glob.h"
 
+#ifdef _WIN32
+#include "WIN/win_fopen.h"
+#endif
+
 void GetFirstMap(int *ep, int *map); // Ty 08/29/98 - add "-warp x" functionality
 static void D_PageDrawer(void);
 
@@ -390,6 +394,9 @@ void D_Display (fixed_t frac)
     if (V_GetMode() != VID_MODEGL)
       R_DrawViewBorder();
     HU_Drawer();
+
+    if (V_GetMode() == VID_MODEGL)
+      gld_ProcessExtraAlpha();
   }
 
   isborderstate      = isborder;

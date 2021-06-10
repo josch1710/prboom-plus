@@ -71,6 +71,10 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#ifdef _WIN32
+#include "WIN/win_fopen.h"
+#endif
+
 static dboolean   server;
 static int       remotetic; // Tic expected from the remote
 static int       remotesend; // Tic expected by the remote
@@ -105,6 +109,7 @@ void D_InitNetGame (void)
     // for play, recording or playback using "single-player coop" mode.
     // Equivalent to using prboom_server with -N 1
     solo_net = (M_CheckParm("-solo-net") != 0);
+    coop_spawns = (M_CheckParm("-coop_spawns") != 0);
     netgame = solo_net;
   } else {
     // Get game info from server
@@ -173,6 +178,7 @@ void D_InitNetGame (void)
   doomcom->numnodes = 0; doomcom->numplayers = 1;
   localcmds = netcmds[consoleplayer];
   solo_net = (M_CheckParm("-solo-net") != 0);
+  coop_spawns = (M_CheckParm("-coop_spawns") != 0);
   netgame = solo_net;
 
   for (i=0; i<doomcom->numplayers; i++)

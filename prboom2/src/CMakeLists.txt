@@ -301,12 +301,14 @@ function(AddGameExecutable TARGET SOURCES)
             e6y_launcher.c
             e6y_launcher.h
             SDL/SDL_windows_main.c
+            WIN/win_fopen.c
+            WIN/win_fopen.h
         )
         if(MSVC)
             set(SOURCES
                 ${SOURCES}
-                win_opendir.c
-                win_opendir.h
+                WIN/win_opendir.c
+                WIN/win_opendir.h
             )
         endif()
     endif()
@@ -424,6 +426,13 @@ if(BUILD_SERVER AND SDL2_NET_FOUND)
         SDL/i_network.c
     )
 
+    if(WIN32)
+        set(PRBOOM_PLUS_GAME_SERVER_SOURCES
+            ${PRBOOM_PLUS_GAME_SERVER_SOURCES}
+            WIN/win_fopen.c
+            WIN/win_fopen.h
+        )
+    endif()
     if(MSVC)
         set(PRBOOM_PLUS_GAME_SERVER_SOURCES
             ${PRBOOM_PLUS_GAME_SERVER_SOURCES}
