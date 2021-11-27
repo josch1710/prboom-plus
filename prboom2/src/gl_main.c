@@ -1280,6 +1280,8 @@ void gld_ProcessExtraAlpha(void)
 {
   if (extra_alpha>0.0f && !invul_method)
   {
+    float current_color[4];
+    glGetFloatv(GL_CURRENT_COLOR, current_color);
     glDisable(GL_ALPHA_TEST);
     glColor4f(extra_red, extra_green, extra_blue, extra_alpha);
     gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
@@ -1291,6 +1293,7 @@ void gld_ProcessExtraAlpha(void)
     glEnd();
     gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
     glEnable(GL_ALPHA_TEST);
+    glColor4f(current_color[0], current_color[1], current_color[2], current_color[3]);
   }
 }
 
@@ -1915,8 +1918,7 @@ bottomtexture:
       }
       else
       {
-        if (bs->floorpic == skyflatnum &&// fs->floorpic != skyflatnum &&
-          bottomtexture == NO_TEXTURE && midtexture == NO_TEXTURE)
+        if (bottomtexture == NO_TEXTURE && midtexture == NO_TEXTURE)
         {
           wall.ytop=(float)max_floor/MAP_SCALE;
           gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);

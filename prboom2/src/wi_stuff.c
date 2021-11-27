@@ -418,7 +418,7 @@ static void WI_slamBackground(void)
 
   if (state != StatCount && enterpic) strcpy(name, enterpic);
   else if (exitpic) strcpy(name, exitpic);
-  else if (gamemode == commercial || (gamemode == retail && wbs->epsd >= 3))
+  else if (gamemode == commercial || wbs->epsd < 0 || (gamemode == retail && wbs->epsd >= 3))
     strcpy(name, "INTERPIC");
   else
     sprintf(name, "WIMAP%d", wbs->epsd);
@@ -645,7 +645,7 @@ void WI_initAnimatedBack(int entering)
   if (gamemode == commercial)  // no animation for DOOM2
     return;
 
-  if (wbs->epsd > 2)
+  if (wbs->epsd < 0 || wbs->epsd > 2)
     return;
 
 
@@ -686,7 +686,7 @@ void WI_updateAnimatedBack(void)
   if (gamemode == commercial)
     return;
 
-  if (wbs->epsd > 2)
+  if (wbs->epsd < 0 || wbs->epsd > 2)
     return;
 
   for (i=0;i<NUMANIMS[wbs->epsd];i++)
@@ -746,7 +746,7 @@ void WI_drawAnimatedBack(void)
   if (gamemode==commercial) //jff 4/25/98 Someone forgot commercial an enum
     return;
 
-  if (wbs->epsd > 2)
+  if (wbs->epsd < 0 || wbs->epsd > 2)
     return;
 
   for (i=0 ; i<NUMANIMS[wbs->epsd] ; i++)
@@ -1038,6 +1038,13 @@ void WI_drawShowNextLoc(void)
   int   i;
   int   last;
 
+  if (gamemapinfo != NULL &&
+      gamemapinfo->endpic[0] &&
+      strcmp(gamemapinfo->endpic, "-") != 0)
+  {
+    return;
+  }
+
   WI_slamBackground();
 
   // draw animated background
@@ -1052,7 +1059,7 @@ void WI_drawShowNextLoc(void)
 
   if ( gamemode != commercial)
   {
-    if (wbs->epsd > 2)
+    if (wbs->epsd < 0 || wbs->epsd > 2)
     {
       WI_drawEL();  // "Entering..." if not E1 or E2
       return;
@@ -1071,13 +1078,6 @@ void WI_drawShowNextLoc(void)
     // draw flashing ptr
     if (snl_pointeron)
       WI_drawOnLnode(wbs->next, yah);
-  }
-
-  if (gamemapinfo != NULL &&
-      gamemapinfo->endpic[0] &&
-      strcmp(gamemapinfo->endpic, "-") != 0)
-  {
-    return;
   }
 
   if (gamemission == pack_nerve && singleplayer && wbs->last == 7)

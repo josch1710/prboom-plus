@@ -668,10 +668,16 @@ static void I_GetScreenResolution(void)
 static const struct {
   const int w, h;
 } canonicals[] = {
-  {640, 480}, // Doom 95
-  {640, 400}, // MBF
-  {320, 240}, // Doom 95
-  {320, 200}, // Vanilla Doom
+  { 640, 480}, // Doom 95
+  { 320, 240}, // Doom 95
+  {1120, 400}, // 21:9
+  { 854, 400}, // 16:9
+  { 768, 400}, // 16:10
+  { 640, 400}, // MBF
+  { 560, 200}, // 21:9
+  { 426, 200}, // 16:9
+  { 384, 200}, // 16:10
+  { 320, 200}, // Vanilla Doom
 };
 static const int num_canonicals = sizeof(canonicals)/sizeof(*canonicals);
 
@@ -1255,8 +1261,7 @@ void I_UpdateVideoMode(void)
 
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, flags);
     // [FG] aspect ratio correction for the canonical video modes
-    if ((SCREENWIDTH == 320 && SCREENHEIGHT == 200) ||
-        (SCREENWIDTH == 640 && SCREENHEIGHT == 400))
+    if (SCREENHEIGHT == 200 || SCREENHEIGHT == 400)
     {
       actualheight = 6*SCREENHEIGHT/5;
     }
@@ -1315,7 +1320,7 @@ void I_UpdateVideoMode(void)
 {
    SDL_version ver;
    SDL_GetVersion(&ver);
-   if (ver.major == 2 && ver.minor == 0 && ver.patch == 14)
+   if (ver.major == 2 && ver.minor == 0 && ver.patch >= 14)
    {
       SDL_SetHintWithPriority(SDL_HINT_VIDEO_MINIMIZE_ON_FOCUS_LOSS, "1", SDL_HINT_OVERRIDE);
    }
