@@ -269,6 +269,7 @@ int     mousebbackward;
 int     mousebturnright;
 int     mousebturnleft;
 int     mousebuse;
+int     mousebspeed;
 int     joybfire;
 int     joybstrafe;
 int     joybstrafeleft;
@@ -485,7 +486,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe]
     || joybuttons[joybstrafe];
   //e6y: the "RUN" key inverts the autorun state
-  speed = (gamekeydown[key_speed] || joybuttons[joybspeed] ? !autorun : autorun); // phares
+  speed = (gamekeydown[key_speed] || joybuttons[joybspeed] || mousebuttons[mousebspeed] ? !autorun : autorun); // phares
 
   forward = side = 0;
 
@@ -2978,6 +2979,8 @@ void G_InitNew(skill_t skill, int episode, int map)
   gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 
   totalleveltimes = 0; // cph
+
+  G_SkipDemoStartCheck();
 
   //jff 4/16/98 force marks on automap cleared every new level start
   AM_clearMarks();
