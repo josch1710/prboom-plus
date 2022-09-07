@@ -149,6 +149,7 @@ dboolean         demorecording;
 dboolean         demoplayback;
 dboolean         democontinue = false;
 char             democontinuename[PATH_MAX];
+char*            demo_filename = NULL;
 dboolean         singledemo;           // quit after playing a demo from cmdline
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
@@ -1844,7 +1845,7 @@ void G_WorldDone (void)
 
 		  return;
 	  }
-	  else if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0))
+	  else if (gamemapinfo->endpic[0] && gamemapinfo->endpic[0] != '-' && !secretexit)
 	  {
 		  // game ends without a status screen.
 		  gameaction = ga_victory;
@@ -3086,10 +3087,18 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 void G_RecordDemo (const char* name)
 {
   char *demoname;
+  int demoname_len;
   usergame = false;
-  demoname = malloc(strlen(name)+4+1);
+  demoname_len = strlen(name)+4+1;
+  demoname = malloc(demoname_len);
   AddDefaultExtension(strcpy(demoname, name), ".lmp");  // 1/18/98 killough
   demorecording = true;
+
+  if (demoname)
+  {
+    free(demo_filename);
+    demo_filename = strdup(BaseName(demoname));
+  }
   
   // the original name chosen for the demo
   if (!orig_demoname)
@@ -3576,6 +3585,7 @@ void G_BeginRecording (void)
 
   R_DemoEx_ResetMLook();
 
+  doom_printf("Demo recording: %s", demo_filename ? demo_filename : "(unknown)");
   free(demostart);
 }
 
@@ -4512,6 +4522,8 @@ void G_ReadDemoContinueTiccmd (ticcmd_t* cmd)
   {
     demo_continue_p = NULL;
     democontinue = false;
+    if (demo_filename)
+        doom_printf("Continuing demo recording: %s", demo_filename);
     // Sometimes this bit is not available
     if ((demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
       (cmd->buttons & BT_CHANGE) == 0)

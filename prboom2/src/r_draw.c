@@ -704,6 +704,7 @@ void R_InitTranslationTables (void)
   int i, j;
 #define MAXTRANS 3
   byte transtocolour[MAXTRANS];
+  byte player_colors[] = {0x70, 0x60, 0x40, 0x20};
 
   // killough 5/2/98:
   // Remove dependency of colormaps aligned on 256-byte boundary
@@ -714,7 +715,7 @@ void R_InitTranslationTables (void)
   for (i=0; i<MAXTRANS; i++) transtocolour[i] = 255;
 
   for (i=0; i<MAXPLAYERS; i++) {
-    byte wantcolour = mapcolor_plyr[i];
+    byte wantcolour = player_colors[i];
     playernumtotrans[i] = 0;
     if (wantcolour != 0x70) // Not green, would like translation
       for (j=0; j<MAXTRANS; j++)
@@ -728,9 +729,9 @@ void R_InitTranslationTables (void)
     if (i >= 0x70 && i<= 0x7f)
       {
   // CPhipps - configurable player colours
-        translationtables[i] = colormaps[0][((i&0xf)<<9) + transtocolour[0]];
-        translationtables[i+256] = colormaps[0][((i&0xf)<<9) + transtocolour[1]];
-        translationtables[i+512] = colormaps[0][((i&0xf)<<9) + transtocolour[2]];
+        translationtables[i] = colormaps[0][(i&0xf) + transtocolour[0]];
+        translationtables[i+256] = colormaps[0][(i&0xf) + transtocolour[1]];
+        translationtables[i+512] = colormaps[0][(i&0xf) + transtocolour[2]];
       }
     else  // Keep all other colors as is.
       translationtables[i]=translationtables[i+256]=translationtables[i+512]=i;
