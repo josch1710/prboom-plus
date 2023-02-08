@@ -87,9 +87,7 @@
 #include "e6y.h"//e6y
 #include "statdump.h"
 
-#ifdef _WIN32
-#include "WIN/win_fopen.h"
-#endif
+#include "m_io.h"
 
 // ano - used for version 255+ demos, like EE or MBF
 static char     prdemosig[] = "PR+UM";
@@ -1618,6 +1616,8 @@ void G_SecretExitLevel (void)
 // G_DoCompleted
 //
 
+dboolean um_pars = false;
+
 void G_DoCompleted (void)
 {
   int i;
@@ -1636,15 +1636,26 @@ void G_DoCompleted (void)
 
   wminfo.lastmapinfo = gamemapinfo;
   wminfo.nextmapinfo = NULL;
+  um_pars = false;
+
   if (gamemapinfo)
   {
 	  const char *next = "";
-	  if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0) && gamemapinfo->nointermission)
+	  dboolean intermission = false;
+
+	  if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0))
 	  {
-		  gameaction = ga_victory;
-		  return;
+		  if (gamemapinfo->nointermission)
+		  {
+		    gameaction = ga_victory;
+		    return;
+		  }
+		  else
+		  {
+		    intermission = true;
+		  }
 	  }
-      wminfo.partime = gamemapinfo->partime;
+
 	  if (secretexit) next = gamemapinfo->nextsecret;
 	  if (next[0] == 0) next = gamemapinfo->nextmap;
 	  if (next[0])
@@ -1658,7 +1669,14 @@ void G_DoCompleted (void)
 		    for (i = 0; i < MAXPLAYERS; i++)
 		      players[i].didsecret = false;
 		  }
+	  }
+
+	  if (next[0] || intermission)
+	  {
 		  wminfo.didsecret = players[consoleplayer].didsecret;
+		  wminfo.partime = gamemapinfo->partime;
+		  if (wminfo.partime > 0)
+		    um_pars = true;
 		  goto frommapinfo;	// skip past the default setup.
 	  }
   }
@@ -1755,19 +1773,16 @@ void G_DoCompleted (void)
           wminfo.next = gamemap;          // go to next level
     }
 
-  if (!(gamemapinfo && gamemapinfo->partime))
-  {
-      if ( gamemode == commercial )
-      {
-          if (gamemap >= 1 && gamemap <= 34)
-              wminfo.partime = TICRATE*cpars[gamemap-1];
-      }
-      else
-      {
-          if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9)
-              wminfo.partime = TICRATE*pars[gameepisode][gamemap];
-      }
-  }
+    if ( gamemode == commercial )
+    {
+        if (gamemap >= 1 && gamemap <= 34)
+            wminfo.partime = TICRATE*cpars[gamemap-1];
+    }
+    else
+    {
+        if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9)
+            wminfo.partime = TICRATE*pars[gameepisode][gamemap];
+    }
 
 frommapinfo:
 
@@ -2552,7 +2567,7 @@ static char *G_NewDemoName(const char *name)
   snprintf(demoname, demoname_size, "%s.lmp", name);
 
   // prevent overriding demos by adding a file name suffix
-  for ( ; j <= 99999 && (fp = fopen(demoname, "rb")) != NULL; j++)
+  for ( ; j <= 99999 && (fp = M_fopen(demoname, "rb")) != NULL; j++)
   {
     snprintf(demoname, demoname_size, "%s-%05d.lmp", name, j);
     fclose(fp);
@@ -3115,7 +3130,7 @@ void G_RecordDemo (const char* name)
   */
 
   demofp = NULL;
-  if (access(demoname, F_OK) || democontinue ||
+  if (M_access(demoname, F_OK) || democontinue ||
      (demo_compatibility && demo_overwriteexisting))
   {
     if (strlen(demoname) > 4
@@ -3123,7 +3138,7 @@ void G_RecordDemo (const char* name)
       I_Error("G_RecordDemo: Cowardly refusing to record over "
               "what appears to be a WAD. (%s)", demoname);
 
-    demofp = fopen(demoname, "wb");
+    demofp = M_fopen(demoname, "wb");
   }
   else
   {
@@ -3132,7 +3147,7 @@ void G_RecordDemo (const char* name)
       I_Error("G_RecordDemo: file %s already exists", name);
     }
 
-    demofp = fopen(demoname, "rb+");
+    demofp = M_fopen(demoname, "rb+");
     if (demofp)
     {
       int slot = -1;
@@ -3190,7 +3205,7 @@ void G_RecordDemo (const char* name)
       {
         //restoration of all data which could be changed by G_ReadDemoHeader
         G_SaveRestoreGameOptions(false);
-        demofp = fopen(demoname, "wb");
+        demofp = M_fopen(demoname, "wb");
       }
       else
       {
