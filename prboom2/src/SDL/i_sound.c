@@ -385,6 +385,7 @@ int I_StartSound(int id, int channel, int vol, int sep, int pitch, int priority)
   int lump;
   size_t len;
 
+
   if ((channel < 0) || (channel >= MAX_CHANNELS))
 #ifdef RANGECHECK
     I_Error("I_StartSound: handle out of range");
@@ -703,7 +704,6 @@ void I_InitSound(void)
     audio_rate = snd_samplerate;
     audio_channels = 2;
     audio_buffers = getSliceSize();
-
     if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
                             NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
     {
@@ -925,7 +925,7 @@ void I_InitMusic(void)
   }
 #ifdef HAVE_MIXER
   if (!music_tmp) {
-#if !defined(_WIN32) && !defined(__OS2__)
+#if !defined(_WIN32) && !defined(OS2)
     music_tmp = strdup("/tmp/"PACKAGE_TARNAME"-music-XXXXXX");
     {
       int fd = mkstemp(music_tmp);
@@ -935,7 +935,7 @@ void I_InitMusic(void)
       } else 
         close(fd);
     }
-#else /* !_WIN32 */
+#else /* !_WIN32 && !OS2 */
     music_tmp = strdup("doom.tmp");
 #endif
     I_AtExit(I_ShutdownMusic, true);
@@ -1423,7 +1423,7 @@ static void Exp_ResumeSong (int handle)
 {
   if (!music_handle)
     return;
-  
+
   SDL_LockMutex (musmutex);
   switch (mus_pause_opt)
   {

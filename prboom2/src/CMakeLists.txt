@@ -314,7 +314,7 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
     
     if(OS2)
-    	add_definitions("-D__OS2__")
+    	add_definitions("-DOS2")
     endif()
 
     add_definitions("-DUSE_EXPERIMENTAL_MUSIC")

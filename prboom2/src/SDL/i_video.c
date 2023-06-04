@@ -451,7 +451,7 @@ static void I_InitInputs(void)
 
   // check if the user wants to use the mouse
   mouse_enabled = usemouse && !nomouse_parm;
-  
+
   SDL_PumpEvents();
 
   // Save the default cursor so it can be recalled later
@@ -465,6 +465,7 @@ static void I_InitInputs(void)
   }
 
   I_InitJoystick();
+
 }
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1196,6 +1197,7 @@ void I_InitGraphics(void)
     UpdateFocus();
     UpdateGrab();
   }
+
 }
 
 video_mode_t I_GetModeFromString(const char *modestr)
@@ -1323,8 +1325,8 @@ void I_UpdateVideoMode(void)
   {
     int flags = SDL_RENDERER_TARGETTEXTURE;
 
-// OS/2 SDL2 does not like PRESENTVSYNC    
-#ifndef __OS2__
+// OS/2 SDL2 does not like PRESENTVSYNC
+#ifndef OS2
     if (render_vsync && !novsync)
       flags |= SDL_RENDERER_PRESENTVSYNC;
 #endif
@@ -1447,6 +1449,7 @@ void I_UpdateVideoMode(void)
   I_UploadNewPalette(0, true);
 
   ST_SetResolution();
+
   AM_SetResolution();
 
 #ifdef GL_DOOM
