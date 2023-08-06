@@ -1325,11 +1325,8 @@ void I_UpdateVideoMode(void)
   {
     int flags = SDL_RENDERER_TARGETTEXTURE;
 
-// OS/2 SDL2 does not like PRESENTVSYNC
-#ifndef OS2
     if (render_vsync && !novsync)
       flags |= SDL_RENDERER_PRESENTVSYNC;
-#endif
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,

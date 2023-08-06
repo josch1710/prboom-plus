@@ -314,7 +314,7 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
     
     if(OS2)
-    	add_definitions("-DOS2 -march=pentium4 -idirafter /@unixroot/usr/include/os2tk45")
+      add_definitions("-DOS2 -march=pentium4 -idirafter /@unixroot/usr/include/os2tk45")
     endif()
 
     add_definitions("-DUSE_EXPERIMENTAL_MUSIC")
