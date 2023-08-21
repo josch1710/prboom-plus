@@ -1,0 +1,58 @@
+#define INCL_NLS
+#include "os2.h"
+#include "resource.h"
+#include "config.h"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+ICON IDI_ICON1 "d:\\work\\prboom-plus\\prboom2\\icons\\prboom-plus-os2.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+
+DLGTEMPLATE IDD_LAUNCHERSERVERDIALOG PRELOAD MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "PrBoom-Plus Launcher", IDD_LAUNCHERSERVERDIALOG, 272, 59, 155, 180, 
+      WS_VISIBLE | WS_SAVEBITS,
+      FCF_DLGBORDER | FCF_NOBYTEALIGN | FCF_TITLEBAR | FCF_SYSMENU
+    BEGIN
+        CONTROL "Game:",                1004, 6, 170, 143, 8, WC_STATIC, SS_TEXT |
+                                            DT_LEFT | DT_TOP | WS_VISIBLE
+        CONTROL "Files:",               1005, 6, 145, 143, 8, WC_STATIC, SS_TEXT |
+                                            DT_LEFT | DT_TOP | WS_VISIBLE
+        CONTROL "History:",             1007, 6, 70, 143, 8, WC_STATIC, SS_TEXT |
+                                            DT_LEFT | DT_TOP |  WS_VISIBLE
+        CONTROL "Commands:",            1010, 6, 45, 143, 8, WC_STATIC, SS_TEXT |
+                                          DT_LEFT | DT_TOP | WS_VISIBLE
+        CONTROL "IWAD",                 IDC_IWADCOMBO, 6, 123, 143, 45,
+                                            WC_COMBOBOX, CBS_DROPDOWNLIST | WS_VISIBLE | WS_GROUP
+        CONTROL "",                     IDC_FULLFILENAMESTATIC, 26, 145, 143, 8, WC_STATIC, 
+                                          SS_TEXT | WS_VISIBLE | DT_TOP | DT_LEFT
+        CONTROL "PWAD",                 IDC_PWADLIST, 6, 83, 143, 60,
+                                            WC_LISTBOX, LS_NOADJUSTPOS | WS_VISIBLE | 
+                                            LS_MULTIPLESEL | LS_EXTENDEDSEL
+        CONTROL "History",              IDC_HISTORYCOMBO, 6, 23, 143, 45,
+                                            WC_COMBOBOX, CBS_DROPDOWNLIST |
+                                            WS_VISIBLE
+        CONTROL "Commands",             IDC_COMMANDCOMBO, 6, -3, 143, 45,
+                                            WC_COMBOBOX, CBS_DROPDOWNLIST |
+                                            WS_VISIBLE
+        CONTROL "OK",                   DID_OK, 6, 6, 38, 12, WC_BUTTON,
+                                            BS_PUSHBUTTON | BS_DEFAULT |
+                                            WS_TABSTOP | WS_VISIBLE
+        CONTROL "Cancel",               DID_CANCEL, 49, 6, 38, 12, WC_BUTTON,
+                                            BS_PUSHBUTTON | WS_TABSTOP |
+                                            WS_VISIBLE
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////

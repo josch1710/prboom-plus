@@ -81,6 +81,8 @@
 #include "e6y.h"
 #ifdef USE_WINDOWS_LAUNCHER
 #include "e6y_launcher.h"
+#elif defined(USE_OS2_LAUNCHER)
+#include "os2_launcher.h"
 #endif
 
 // NSM
@@ -1224,20 +1226,19 @@ default_t defaults[] =
   {"comperr_freeaim", {&default_comperr[comperr_freeaim]},  {0},0,1,
    def_bool,ss_stat},
 
-#ifdef USE_WINDOWS_LAUNCHER
+#if defined(USE_WINDOWS_LAUNCHER) || defined(USE_OS2_LAUNCHER)
   {"Prboom-plus launcher settings",{NULL},{0},UL,UL,def_none,ss_none},
-  {"launcher_enable",{(int*)&launcher_enable},{launcher_enable_never},
-   launcher_enable_never, launcher_enable_count - 1, def_int,ss_none},
-  {"launcher_history0", {NULL,&launcher_history[0]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history1", {NULL,&launcher_history[1]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history2", {NULL,&launcher_history[2]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history3", {NULL,&launcher_history[3]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history4", {NULL,&launcher_history[4]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history5", {NULL,&launcher_history[5]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history6", {NULL,&launcher_history[6]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history7", {NULL,&launcher_history[7]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history8", {NULL,&launcher_history[8]}, {0,""},UL,UL,def_str,ss_none},
-  {"launcher_history9", {NULL,&launcher_history[9]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_enable",{(int*)&launcher_enable},{launcher_enable_never}, launcher_enable_never, launcher_enable_count - 1, def_int,ss_none},
+  {"launcher_history0", {NULL,(const char**)&launcher_history[0]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history1", {NULL,(const char**)&launcher_history[1]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history2", {NULL,(const char**)&launcher_history[2]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history3", {NULL,(const char**)&launcher_history[3]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history4", {NULL,(const char**)&launcher_history[4]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history5", {NULL,(const char**)&launcher_history[5]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history6", {NULL,(const char**)&launcher_history[6]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history7", {NULL,(const char**)&launcher_history[7]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history8", {NULL,(const char**)&launcher_history[8]}, {0,""},UL,UL,def_str,ss_none},
+  {"launcher_history9", {NULL,(const char**)&launcher_history[9]}, {0,""},UL,UL,def_str,ss_none},
 #endif
   {"Prboom-plus demo patterns list. Put your patterns here",{NULL},{0},UL,UL,def_none,ss_none},
   {"demo_patterns_mask", {NULL, &demo_patterns_mask, &demo_patterns_count, &demo_patterns_list}, {0,"demo_pattern",9, &demo_patterns_list_def[0]},UL,UL,def_arr,ss_none},
@@ -1627,13 +1628,13 @@ void M_LoadDefaults (void)
           newstring = malloc(len);
           strparm[len-1] = 0; // clears trailing double-quote mark
           strcpy(newstring, strparm+1); // clears leading double-quote mark
-  } else if ((strparm[0] == '0') && (strparm[1] == 'x')) {
-    // CPhipps - allow ints to be specified in hex
-    sscanf(strparm+2, "%x", &parm);
-  } else {
+        } else if ((strparm[0] == '0') && (strparm[1] == 'x')) {
+          // CPhipps - allow ints to be specified in hex
+          sscanf(strparm+2, "%x", &parm);
+        } else {
           sscanf(strparm, "%i", &parm);
-    // Keycode hack removed
-  }
+          // Keycode hack removed
+        }
 
         // e6y: arrays
         if (item)

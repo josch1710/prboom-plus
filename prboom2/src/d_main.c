@@ -92,6 +92,8 @@
 #include "e6y.h"
 #ifdef USE_WINDOWS_LAUNCHER
 #include "e6y_launcher.h"
+#elif defined(USE_OS2_LAUNCHER)
+#include "os2_launcher.h"
 #endif
 
 // NSM
@@ -1965,7 +1967,7 @@ static void D_DoomMainSetup(void)
     int demo_footer = CheckDemoExDemo();
     if (!demo_footer)
       demo_footer = CheckAutoDemo();
-#ifdef USE_WINDOWS_LAUNCHER
+#if defined(USE_WINDOWS_LAUNCHER) || defined(USE_OS2_LAUNCHER)
     LauncherShow(demo_footer);
 #endif
   }

@@ -69,6 +69,8 @@
 #include "m_io.h"
 #ifdef _WIN32
 #include "e6y_launcher.h"
+#elif defined(OS2)
+#include "os2_launcher.h"
 #endif
 
 extern patchnum_t hu_font[HU_FONTSIZE];
@@ -3341,7 +3343,7 @@ setup_menu_t gen_settings2[] = { // General Settings screen2
   {"Default compatibility level",      S_CHOICE,        m_null, G_X, G_Y+15*8, {"default_compatibility_level"}, 0, 0, NULL, &gen_compstrings[1]},
   {"Show ENDOOM screen",               S_YESNO,         m_null, G_X, G_Y+16*8, {"showendoom"}},
   {"Fullscreen menu background",       S_YESNO, m_null, G_X, G_Y + 17*8, {"menu_background"}},
-#ifdef USE_WINDOWS_LAUNCHER
+#if defined(USE_WINDOWS_LAUNCHER) || defined(USE_OS2_LAUNCHER)
   {"Use In-Game Launcher",             S_CHOICE,        m_null, G_X, G_Y+ 18*8, {"launcher_enable"}, 0, 0, NULL, launcher_enable_states},
 #endif
 
