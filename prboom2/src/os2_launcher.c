@@ -275,7 +275,7 @@ char* e6y_I_FindFile(const char* ext)
   size_t  pl = strlen(ext) + 4;
   glob_t *globdata;
 
-  for (i=0; i<3; i++) {
+  for (i=0; i<=7; i++) {
     //char  * p;
     char d[PATH_MAX];
     
@@ -291,6 +291,21 @@ char* e6y_I_FindFile(const char* ext)
         break;
       case 2:
         strcpy(d, I_DoomExeDir());
+        break;
+      case 3:
+        strcpy(d, DOOMWADDIR);
+        break;
+      case 4:
+        strcpy(d, "/@unixroot/usr/local/share/games/doom");
+        break;
+      case 5:
+        strcpy(d, "/@unixroot/usr/share/games/doom");
+        break;
+      case 6:
+        strcpy(d, "/@unixroot/usr/local/share/doom");
+        break;
+      case 7:
+        strcpy(d, "/@unixroot/usr/share/doom");
         break;
     }
 
@@ -801,7 +816,7 @@ printf("cachefile %s\n", launchercachefile);
       if (p)
       {
         *p = 0;
-        if (3 == sscanf(p + 1, "%d, %d, %d", &item.source, &item.doom1, &item.doom2))
+        if (3 == sscanf(p + 1, "%d, %ld, %ld", &item.source, &item.doom1, &item.doom2))
         {
           launcher.cache = realloc(launcher.cache, sizeof(*launcher.cache) * (launcher.cachesize + 1));
           strcpy(launcher.cache[launcher.cachesize].name, M_Strlwr(strrtrm(name)));
@@ -921,9 +936,10 @@ static void L_FillGameList(void)
           int index;
           sprintf(iwadname, "%s (%s)", IWADTypeNames[j], standard_iwads[j]);
           index = SHORT1FROMMR(WinSendMsg(launcher.listIWAD, LM_INSERTITEM, MPFROMSHORT(LIT_END), MPFROMP((PSZ)iwadname)));
-printf("Index %d (%d, %d)\n", index, LIT_MEMERROR, LIT_ERROR);
-          //if (index >= 0)
-            //WinSendMsg(launcher.listIWAD, LM_SETITEMHANDLE, MPFROMSHORT(index), MPFROMSHORT(i));
+          if (index >= 0)
+            WinSendMsg(launcher.listIWAD, LM_SETITEMHANDLE, MPFROMSHORT(index), MPFROMSHORT(i));
+            
+          break;
         }
       }
     }
@@ -1071,167 +1087,54 @@ static void L_FillHistoryList(void)
   }
 }
 
-/*
-BOOL CALLBACK LauncherClientCallback (HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
-  case WM_INITDIALOG:
-    {
-      int i;
-      HMODULE hMod;
-      waddata_t data;
-
-      launcher.HWNDClient = hDlg;
-      launcher.listIWAD = GetDlgItem(launcher.HWNDClient, IDC_IWADCOMBO);
-      launcher.listPWAD = GetDlgItem(launcher.HWNDClient, IDC_PWADLIST);
-      launcher.listHistory = GetDlgItem(launcher.HWNDClient, IDC_HISTORYCOMBO);
-      launcher.listCMD = GetDlgItem(launcher.HWNDClient, IDC_COMMANDCOMBO);
-      launcher.staticFileName = GetDlgItem(launcher.HWNDClient, IDC_FULLFILENAMESTATIC);
-
-      WinSendMsg(launcher.listCMD, CB_ADDSTRING, 0, (LPARAM)"Rebuild the "PACKAGE_NAME" cache");
-      WinSendMsg(launcher.listCMD, CB_ADDSTRING, 0, (LPARAM)"Clear all Launcher's history");
-      WinSendMsg(launcher.listCMD, CB_ADDSTRING, 0, (LPARAM)"Associate the current EXE with DOOM wads");
-      WinSendMsg(launcher.listCMD, CB_ADDSTRING, 0, (LPARAM)"... with DOOM demos");
-      WinSendMsg(launcher.listCMD, CB_ADDSTRING, 0, (LPARAM)"... with DOOM demos (-auto mode)");
-
-      {
-        char buf[128];
-        strcpy(buf, ((launcher_enable + 1) % launcher_enable_count == launcher_enable_never ? "Disable" : "Enable"));
-        strcat(buf, " this Launcher for future use");
-        WinSendMsg(launcher.listCMD, CB_ADDSTRING, 0, (LPARAM)buf);
-      }
-
-      WinSendMsg(launcher.listCMD, CB_SETCURSEL, -1, 0);
-      L_CommandOnChange();
-
-      L_ReadCacheData();
-      
-      e6y_I_FindFile("*.wad");
-      e6y_I_FindFile("*.deh");
-      e6y_I_FindFile("*.bex");
-
-      L_FillGameList();
-      L_FillHistoryList();
-
-      i = -1;
-      if (launcher_params)
-      {
-        WadDataInit(&data);
-        WadFilesToWadData(&data);
-        L_GUISelect(&data);
-      }
-      else
-      {
-#ifdef HAVE_LIBPCREPOSIX
-        for (i = 0; (size_t)i < numwadfiles; i++)
-        {
-          if (wadfiles[i].src == source_lmp)
-          {
-            patterndata_t patterndata;
-            memset(&patterndata, 0, sizeof(patterndata));
-
-            if (DemoNameToWadData(wadfiles[i].name, &data, &patterndata))
-            {
-              L_GUISelect(&data);
-              WinSendMsg(launcher.staticFileName, WM_SETTEXT, 0, (LPARAM)patterndata.pattern_name);
-              WadDataFree(&data);
-              break;
-            }
-            free(patterndata.missed);
-          }
-        }
-#endif
-      }
-      
-      if ((size_t)i == numwadfiles)
-      {
-        if (WinSendMsg(launcher.listHistory, CB_SETCURSEL, 0, 0) != CB_ERR)
-        {
-          L_HistoryOnChange();
-          SetFocus(launcher.listHistory);
-        }
-        else if (WinSendMsg(launcher.listIWAD, CB_SETCURSEL, 0, 0) != CB_ERR)
-        {
-          L_GameOnChange();
-          SetFocus(launcher.listPWAD);
-        }
-      }
-    }
-		break;
-
-  case WM_NOTIFY:
-    OnWMNotify(lParam);
-    break;
-
-  case WM_COMMAND:
-    {
-      int wmId    = LOWORD(wParam);
-      int wmEvent = HIWORD(wParam);
-
-      if (wmId == IDC_PWADLIST && wmEvent == LBN_DBLCLK)
-      {
-        if (L_PrepareToLaunch())
-          EndDialog (launcher.HWNDLauncher, 1);
-      }
-      
-      if (wmId == IDC_HISTORYCOMBO && wmEvent == CBN_SELCHANGE)
-        L_HistoryOnChange();
-      
-      if (wmId == IDC_IWADCOMBO && wmEvent == CBN_SELCHANGE)
-        L_GameOnChange();
-      
-      if (wmId == IDC_PWADLIST && wmEvent == LBN_SELCHANGE)
-        L_FilesOnChange();
-
-      if ((wmId == IDC_IWADCOMBO && wmEvent == CBN_SELCHANGE) ||
-        (wmId == IDC_PWADLIST && wmEvent == LBN_SELCHANGE))
-        WindSendDlgItemMsg(launcher.listHistory, CB_SETCURSEL, -1, 0);
-
-      if (wmId == IDC_COMMANDCOMBO && wmEvent == CBN_SELCHANGE)
-        L_CommandOnChange();
-    }
-    break;
-	}
-	return FALSE;
-  }
-*/
-
 MRESULT EXPENTRY LauncherCallback (HWND hWnd, ULONG message, MPARAM wParam, MPARAM lParam)
 {
   int wmId, wmEvent;
-  
+
   switch (message)
   {
-  case WM_COMMAND:
-    wmId    = SHORT1FROMMP(wParam);
-    wmEvent = SHORT2FROMMP(wParam);
-
-    switch (wmId)
+  case WM_CONTROL: 
     {
-    case DID_CANCEL:
-      WinDismissDlg(hWnd, 0);
-      break;
-
-    case DID_OK:
-      if (L_PrepareToLaunch())
-      {
-        WinDismissDlg(hWnd, 1);
-      }
-      break;
+      wmId    = SHORT1FROMMP(wParam);
+      wmEvent = SHORT2FROMMP(wParam);
+  
+      if (wmId == IDC_PWADLIST && wmEvent == LN_ENTER && L_PrepareToLaunch())
+        WinDismissDlg(launcher.HWNDLauncher, 1);
       
-    case IDC_COMMANDCOMBO: 
-      if (wmEvent == LN_SELECT)
-      {
+      if (wmId == IDC_HISTORYCOMBO && wmEvent == LN_SELECT)
+        L_HistoryOnChange();
+      
+      if (wmId == IDC_IWADCOMBO && wmEvent == LN_SELECT)
+        L_GameOnChange();
+      
+      if (wmId == IDC_PWADLIST && wmEvent == LN_SELECT)
+        L_FilesOnChange();
+  
+      if ((wmId == IDC_IWADCOMBO && wmEvent == LN_SELECT) ||
+        (wmId == IDC_PWADLIST && wmEvent == LN_SELECT))
+        WinSendMsg(launcher.listHistory, LM_SELECTITEM, MPFROMSHORT(LIT_NONE), MPFROMSHORT(0));
+  
+      if (wmId == IDC_COMMANDCOMBO && wmEvent == LN_SELECT)
         L_CommandOnChange();
-      }
+    }
+    break;
+
+  case WM_COMMAND:
+    {
+      wmId    = SHORT1FROMMP(wParam);
+      wmEvent = SHORT2FROMMP(wParam);
+
+      if (wmId == DID_CANCEL)
+        WinDismissDlg(launcher.HWNDLauncher, 0);
+    
+      if (wmId == DID_OK && L_PrepareToLaunch())
+        WinDismissDlg(launcher.HWNDLauncher, 1);
     }
     break;
     
   case WM_INITDLG:
       {
         int i;
-        HMODULE hMod;
         waddata_t data;
 
         launcher.HWNDLauncher = hWnd;
@@ -1240,7 +1143,6 @@ MRESULT EXPENTRY LauncherCallback (HWND hWnd, ULONG message, MPARAM wParam, MPAR
         launcher.listHistory = WinWindowFromID(launcher.HWNDLauncher, IDC_HISTORYCOMBO);
         launcher.listCMD = WinWindowFromID(launcher.HWNDLauncher, IDC_COMMANDCOMBO);
         launcher.staticFileName = WinWindowFromID(launcher.HWNDLauncher, IDC_FULLFILENAMESTATIC);
-printf("%p %p %p %p %p %p\n", launcher.HWNDLauncher, launcher.listIWAD, launcher.listPWAD, launcher.listHistory, launcher.listCMD, launcher.staticFileName);
         
         // Fill the commands combobox
         WinSendMsg(launcher.listCMD, LM_INSERTITEM, MPFROMSHORT(LIT_END), MPFROMP("Rebuild the "PACKAGE_NAME" cache"));
@@ -1266,7 +1168,7 @@ printf("%p %p %p %p %p %p\n", launcher.HWNDLauncher, launcher.listIWAD, launcher
         e6y_I_FindFile("*.bex");
   
         L_FillGameList();
-/*        L_FillHistoryList();
+        L_FillHistoryList();
 
         i = -1;
         if (launcher_params)
@@ -1310,15 +1212,16 @@ printf("%p %p %p %p %p %p\n", launcher.HWNDLauncher, launcher.listIWAD, launcher
             L_GameOnChange();
             WinSetFocus(HWND_DESKTOP, launcher.listPWAD);
           }
-        } */
+        }
       }
       
       WinUpdateWindow(launcher.HWNDLauncher);
-      return 1;
+      return (MRESULT)1;
       
   case WM_DESTROY:
     L_HistoryFreeData();
     break;
+    
   default:
       /*
        * Any event messages that the dialog procedure has not processed
@@ -1374,30 +1277,16 @@ void LauncherShow(unsigned int params)
 
   sprintf(launchercachefile,"%s/"PACKAGE_TARNAME".cache", I_DoomExeDir());
 
-  success = WinDlgBox(HWND_DESKTOP,    /* Place anywhere on desktop    */
-                      HWND_DESKTOP,    /* Owned by desk top            */
-                      (PFNWP)LauncherCallback,   /* Addr. of procedure  */
-                      (HMODULE)0,      /* Module handle                */
-                      IDD_LAUNCHERSERVERDIALOG,     /* Dialog identifier in resource*/
-                      NULL);           /* Initialization data          */
-  
-  printf("Dialog success %ld %ld\n",success, WinGetLastError(0));
-  if (!success)
+  success = WinDlgBox(HWND_DESKTOP, HWND_DESKTOP,
+    (PFNWP)LauncherCallback, (HMODULE)0,
+    IDD_LAUNCHERSERVERDIALOG, NULL);
+
+  if (success == 0)
   {
-    printf("WinDlgBox\n");
     I_SafeExit(0);
   }
 
-  I_SafeExit(0);
-  switch (success)
-  {
-  case 0:
-    I_SafeExit(-1);
-    break;
-  case 1:
-    M_SaveDefaults();
-    break;
-  }
+  M_SaveDefaults();
 }
 
 #endif // OS2
