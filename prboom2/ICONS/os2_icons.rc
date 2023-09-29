@@ -33,7 +33,7 @@ BEGIN
                                             DT_LEFT | DT_TOP |  WS_VISIBLE
         CONTROL "Commands:",            504, 6, 45, 143, 8, WC_STATIC, SS_TEXT |
                                           DT_LEFT | DT_TOP | WS_VISIBLE
-        CONTROL "IWAD",                 IDC_IWADCOMBO, 6, 123, 143, 45,
+        CONTROL "",                     IDC_IWADCOMBO, 6, 123, 143, 45,
                                             WC_COMBOBOX, CBS_DROPDOWNLIST | WS_VISIBLE | WS_GROUP
         CONTROL "",                     IDC_FULLFILENAMESTATIC, 26, 145, 143, 8, WC_STATIC, 
                                           SS_TEXT | WS_VISIBLE | DT_TOP | DT_LEFT

@@ -1304,7 +1304,7 @@ int ParseDemoPattern(const char *str, waddata_t* waddata, char **missed, dboolea
 
   for (;(pToken = strtok(pToken,"|"));pToken = NULL)
   {
-    char *token = NULL;
+    char *token = NULL, *temp = NULL;
     processed++;
 
     if (trytodownload && !I_FindFile2(pToken, ".wad"))

@@ -144,7 +144,7 @@ static void W_AddFile(wadfile_info_t *wadfile)
   filelump_t  singleinfo;
   int         flags = 0;
 
-  if (wadfile->src == source_skip)
+  if (wadfile->name == NULL || wadfile->src == source_skip)
   {
     return;
   }
