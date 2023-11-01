@@ -11,7 +11,7 @@
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-ICON IDI_ICON1 "d:\\work\\prboom-plus\\prboom2\\icons\\prboom-plus-os2.ico"
+ICON IDI_ICON1 "..\\ICONS\\prboom-plus-os2.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

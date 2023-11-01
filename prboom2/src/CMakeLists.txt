@@ -336,6 +336,11 @@ function(AddGameExecutable TARGET SOURCES)
     )
     if (OS2)
       SET_TARGET_PROPERTIES(${TARGET} PROPERTIES OS2_DEF_EXEType "WINDOWCOMPAT")
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
     endif()
     
     target_link_libraries(${TARGET} PRIVATE
