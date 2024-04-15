@@ -312,18 +312,16 @@ function(AddGameExecutable TARGET SOURCES)
             )
         endif()
     endif()
-    
+
     if(OS2)
-      add_definitions("-DOS2 -DUSE_OS2_LAUNCHER -march=pentium4 -idirafter /@unixroot/usr/include/os2tk45")
-      enable_language(RC)
-      set_source_files_properties(../ICONS/os2_icons.rc PROPERTIES LANGUAGE RC)
       set(SOURCES
             ${SOURCES}
-            ../ICONS/os2_icons.rc
+#            ../ICONS/os2_icons.rc
             os2_launcher.c
             os2_launcher.h
             SDL/SDL_windows_main.c
       )
+      add_definitions("-DOS2 -DUSE_OS2_LAUNCHER -march=pentium4 -idirafter /@unixroot/usr/include/os2tk45")
     endif()
 
     add_definitions("-DUSE_EXPERIMENTAL_MUSIC")
@@ -336,8 +334,11 @@ function(AddGameExecutable TARGET SOURCES)
     )
     if (OS2)
       SET_TARGET_PROPERTIES(${TARGET} PROPERTIES OS2_DEF_EXEType "WINDOWAPI")
+      add_custom_command(TARGET ${TARGET} POST_BUILD
+        COMMAND wrc -q ${CMAKE_CURRENT_SOURCE_DIR}/../ICONS/os2_icons.rc -i=${CMAKE_CURRENT_SOURCE_DIR} $<TARGET_FILE:${TARGET}>
+      )
     endif()
-    
+
     target_link_libraries(${TARGET} PRIVATE
         ${SDL2_LIBRARIES}
     )
